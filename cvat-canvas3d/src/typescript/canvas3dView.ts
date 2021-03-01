@@ -43,7 +43,6 @@ export interface Views {
     top: RenderView;
     side: RenderView;
     front: RenderView;
-
 }
 
 export interface CubeObject {
@@ -167,7 +166,7 @@ export class Canvas3dViewImpl implements Canvas3dView, Listener {
         this.views.front.camera.up.set(0, 0, 1);
         this.views.front.camera.lookAt(0, 0, 0);
 
-        Object.keys(this.views).forEach((view: string) => {
+        Object.keys(this.views).forEach((view: string): void => {
             const viewType = this.views[view as keyof Views];
             viewType.renderer.setSize(width, height);
             if (view !== ViewType.PERSPECTIVE) {
@@ -256,7 +255,7 @@ export class Canvas3dViewImpl implements Canvas3dView, Listener {
             if (camera instanceof THREE.PerspectiveCamera) {
                 camera.aspect = width / height;
             } else {
-                const topViewFactor = (viewName === ViewType.TOP) ? 2 : 0;
+                const topViewFactor = viewName === ViewType.TOP ? 2 : 0;
                 const viewSize = CONST.ZOOM_FACTOR;
                 const aspectRatio = width / height;
                 if (!(camera instanceof THREE.PerspectiveCamera)) {
@@ -273,11 +272,12 @@ export class Canvas3dViewImpl implements Canvas3dView, Listener {
         }
     }
 
-    private renderRayCaster = (viewType: RenderView) => {
+    private renderRayCaster = (viewType: RenderView): void => {
         viewType.rayCaster.renderer.setFromCamera(viewType.rayCaster.mouseVector, viewType.camera);
         if (this.mode === Mode.DRAW) {
             const intersects = this.views.perspective.rayCaster.renderer.intersectObjects(
-                this.views.perspective.scene.children, true,
+                this.views.perspective.scene.children,
+                true,
             );
             if (intersects.length > 0) {
                 this.views.perspective.scene.children[0].add(this.cube.perspective);
@@ -287,10 +287,11 @@ export class Canvas3dViewImpl implements Canvas3dView, Listener {
             }
         } else if (this.mode === Mode.IDLE) {
             const intersects = this.views.perspective.rayCaster.renderer.intersectObjects(
-                this.views.perspective.scene.children[0].children, true,
+                this.views.perspective.scene.children[0].children,
+                true,
             );
             if (intersects.length !== 0) {
-                this.views.perspective.scene.children[0].children.forEach((sceneItem: THREE.Mesh) => {
+                this.views.perspective.scene.children[0].children.forEach((sceneItem: THREE.Mesh): void => {
                     if (this.selected.perspective !== sceneItem) {
                         // eslint-disable-next-line no-param-reassign
                         sceneItem.material.color = new THREE.Color(0xff0000);
@@ -303,7 +304,7 @@ export class Canvas3dViewImpl implements Canvas3dView, Listener {
                 }
             } else {
                 if (this.highlighted) {
-                    this.views.perspective.scene.children[0].children.forEach((sceneItem: THREE.Mesh) => {
+                    this.views.perspective.scene.children[0].children.forEach((sceneItem: THREE.Mesh): void => {
                         if (this.selected.perspective !== sceneItem) {
                             // eslint-disable-next-line no-param-reassign
                             sceneItem.material.color = new THREE.Color(0xff0000);
@@ -316,7 +317,7 @@ export class Canvas3dViewImpl implements Canvas3dView, Listener {
     };
 
     public render(): void {
-        Object.keys(this.views).forEach((view: string) => {
+        Object.keys(this.views).forEach((view: string): void => {
             const viewType = this.views[view as keyof Views];
             Canvas3dViewImpl.resizeRendererToDisplaySize(view, viewType);
             viewType.controls.update(this.clock.getDelta());
@@ -387,10 +388,11 @@ export class Canvas3dViewImpl implements Canvas3dView, Listener {
 
             if (type === 'click' && this.mode === Mode.IDLE) {
                 const intersects = this.views.perspective.rayCaster.renderer.intersectObjects(
-                    this.views.perspective.scene.children[0].children, true,
+                    this.views.perspective.scene.children[0].children,
+                    true,
                 );
                 if (intersects.length !== 0) {
-                    this.views.perspective.scene.children[0].children.forEach((sceneItem: THREE.Mesh) => {
+                    this.views.perspective.scene.children[0].children.forEach((sceneItem: THREE.Mesh): void => {
                         // eslint-disable-next-line no-param-reassign
                         sceneItem.material.color = new THREE.Color(0xff0000);
                     });
@@ -400,8 +402,7 @@ export class Canvas3dViewImpl implements Canvas3dView, Listener {
                         if (view !== ViewType.PERSPECTIVE) {
                             this.views[view as keyof Views].scene.children[0].children = [selectedObject.clone()];
                             this.views[view as keyof Views].controls.fitToBox(selectedObject, false);
-                            this.views[view as keyof Views].controls.zoom((view === ViewType.TOP) ? -7 : -5,
-                                false);
+                            this.views[view as keyof Views].controls.zoom(view === ViewType.TOP ? -7 : -5, false);
                         }
                         this.views[view as keyof Views].scene.background = new THREE.Color(0x000000);
                     });

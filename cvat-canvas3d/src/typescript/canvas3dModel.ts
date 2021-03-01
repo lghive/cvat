@@ -9,10 +9,6 @@ export interface Size {
     height: number;
 }
 
-export interface DrawData {
-    enabled: boolean;
-}
-
 export interface Image {
     renderWidth: number;
     renderHeight: number;
@@ -31,10 +27,10 @@ export enum FrameZoom {
 }
 
 export enum ViewType {
-    PERSPECTIVE = "perspective",
-    TOP = "top",
-    SIDE = "side",
-    FRONT = "front"
+    PERSPECTIVE = 'perspective',
+    TOP = 'top',
+    SIDE = 'side',
+    FRONT = 'front',
 }
 
 export enum UpdateReasons {
@@ -149,13 +145,11 @@ export class Canvas3dModelImpl extends MasterImpl implements Canvas3dModel {
     }
 
     public draw(drawData: DrawData): void {
-
-
         if (drawData.enabled && this.data.drawData.enabled) {
             throw new Error('Drawing has been already started');
         }
         this.data.drawData.enabled = drawData.enabled;
-        this.data.mode = Mode.DRAW
+        this.data.mode = Mode.DRAW;
 
         this.notify(UpdateReasons.DRAW);
     }
@@ -163,5 +157,4 @@ export class Canvas3dModelImpl extends MasterImpl implements Canvas3dModel {
     public cancel(): void {
         this.notify(UpdateReasons.CANCEL);
     }
-
 }
